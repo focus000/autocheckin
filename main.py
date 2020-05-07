@@ -2,7 +2,9 @@ import requests
 import random
 import logging
 from apscheduler.schedulers.blocking import BlockingScheduler
+import pytz
 
+timez = pytz.timezone('Asia/Shanghai')
 logging.basicConfig(filename='out.log', level=logging.INFO)
 
 knames = [
@@ -12,7 +14,7 @@ knames = [
 ]
 persons_id = [220170918811, 220170918911, 220170918711, 220170918721, 220170918421, 220170919001]
 
-sched = BlockingScheduler()
+sched = BlockingScheduler(timezone=timez)
 
 @sched.scheduled_job('cron', id='my_job', hour='6,10,18', minute=31)
 def job():
