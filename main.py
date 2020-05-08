@@ -16,7 +16,7 @@ persons_id = [220170918811, 220170918911, 220170918711, 220170918721, 2201709184
 
 sched = BlockingScheduler(timezone=timez)
 
-@sched.scheduled_job('cron', id='my_job', hour='6,10,18', minute=31)
+@sched.scheduled_job('cron', id='my_job', hour='6,10,18', minute=40)
 def job():
     for single_id in persons_id:
         p = requests.post("http://202.201.13.180:9037/encryption/getMD5",
