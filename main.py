@@ -12,7 +12,7 @@ knames = [
     "cgdd", "gldd", "jzyy", "bllb", "sfjctr", "jcrysm", "xgjcjlsj", "xgjcjldd",
     "xgjcjlsm", "zcwd", "zwwd", "wswd", "sbr", "sjd"
 ]
-persons_id = [220170918811, 220170918911, 220170918711, 220170918721, 220170918421, 220170919001]
+persons_id = [220170918811, 220170918911, 220170918711, 220170918721, 220170918421, 220170919001, 220170918971]
 
 sched = BlockingScheduler(timezone=timez)
 
