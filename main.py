@@ -4,11 +4,13 @@ import logging
 from apscheduler.schedulers.blocking import BlockingScheduler
 import pytz
 import yaml
+import time
 
 timez = pytz.timezone('Asia/Shanghai')
 
 sched = BlockingScheduler(timezone=timez)
 
+t = 1
 
 @sched.scheduled_job('cron', id='my_job', hour='6,10,18', minute=40)
 def job():
@@ -16,20 +18,34 @@ def job():
         config = yaml.load(f.read(), Loader=yaml.SafeLoader)
     logging.basicConfig(filename=config['logger_file'], level=logging.INFO)
     for single_id in config['users_id']:
+        # print(single_id)
         p = requests.post("http://202.201.13.180:9037/encryption/getMD5",
                           data={'cardId': single_id})
-        if p.json()['code'] != 1:
+        while p.json()['message'] != '成功':
+            time.sleep(t)
+            logging.warning( p.json())
             logging.warning(str(single_id) + "getMD5 failed")
-            continue
+            p = requests.post("http://202.201.13.180:9037/encryption/getMD5",
+                          data={'cardId': single_id})
+            # continue
         r = requests.post("http://202.201.13.180:9037/grtbMrsb/getInfo",
                           data={
                               'cardId': single_id,
                               'md5': p.json()['data']
                           })
         data = r.json()
-        if data['code'] != 1:
+        # print(data)
+        while data['message'] != '成功':
+            time.sleep(t)
+            logging.warning( r.json())
             logging.warning(str(single_id) + "getInfo failed")
-            continue
+            r = requests.post("http://202.201.13.180:9037/grtbMrsb/getInfo",
+                          data={
+                              'cardId': single_id,
+                              'md5': p.json()['data']
+                          })
+            data = r.json()
+            # continue
         data = data['data']
         data.update(data['list'][0])
         data.pop('list')
@@ -46,12 +62,16 @@ def job():
         f = requests.post("http://202.201.13.180:9037/grtbMrsb/submit",
                           data=ndata)
         # print(f.json())
-        if f.json()['code'] != 1:
+        while f.json()['message'] != '成功':
+            time.sleep(t)
             logging.warning(f.json())
+            f = requests.post("http://202.201.13.180:9037/grtbMrsb/submit",
+                          data=ndata)
             # print(str(single_id) + "submit failed")
-            continue
+            # continue
         else:
             logging.info(f.json())
+        # time.sleep(t)
 
 
 job()
